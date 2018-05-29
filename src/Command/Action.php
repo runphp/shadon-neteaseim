@@ -32,7 +32,7 @@ class Action
     {
         $body = \GuzzleHttp\json_decode($response->getBody(), true);
         if (200 != $body['code']) {
-            throw new Exception(ReturnCode::CODE_INFO[$body['code']], $body['code'], $response);
+            throw new Exception(ReturnCode::CODE_INFO[$body['code']], $body['code'], $response->getBody());
         }
 
         return $body;
