@@ -1,5 +1,5 @@
 {
-    "name": "runphp/netease-im",
+    "name": "shadon/neteaseim",
     "description": "云信服务端api",
     "type": "library",
     "require": {
