@@ -13,27 +13,44 @@ declare(strict_types=1);
 
 namespace Shadon\Neteaseim;
 
+use GuzzleHttp\Psr7\Request;
+use Shadon\Neteaseim\Command\Action;
+use Shadon\Neteaseim\Tool\CheckSumBuilder;
+
 class Client
 {
-    protected $appKey;
+    private $appKey;
 
-    protected $appSecret;
+    private $appSecret;
 
-    protected $httpClient;
+    private $gateway = 'https://api.netease.im';
 
-    protected $gateway = 'https://api.netease.im/';
+    private $httpClient;
 
     public function __construct(array $options)
     {
         $this->appKey = $options['appKey'];
         $this->appSecret = $options['appSecret'];
-        $this->httpClient = new self([
-            'base_uri'        => $this->gateway,
-        ]);
+        $this->httpClient = new \GuzzleHttp\Client();
     }
 
-    public function executeAction(Action $action): void
+    public function executeAction(Action $action)
     {
-        dd($action);
+        $uri = $this->gateway.$action->getUri();
+        $nonce = CheckSumBuilder::getNonce();
+        $curTime = time();
+        $headers = [
+            'AppKey'       => $this->appKey,
+            'Nonce'        => $nonce,
+            'CurTime'      => $curTime,
+            'CheckSum'     => CheckSumBuilder::getCheckSum($this->appSecret, $nonce, $curTime),
+            'Content-Type' => 'application/x-www-form-urlencoded;charset=utf-8',
+        ];
+        $request = new Request('POST', $uri, $headers);
+        $response = $this->httpClient->send($request, [
+            'form_params' => $action->getArguments(),
+        ]);
+
+        return $action($response);
     }
 }
