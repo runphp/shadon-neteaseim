@@ -11,13 +11,13 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Shadon\Neteaseim\Command\Nimserver\Chatroom;
+namespace Shadon\Neteaseim\Command\Nimserver\Msg;
 
 use Psr\Http\Message\ResponseInterface;
 use Shadon\Neteaseim\Command\Action;
 
 /**
- * 发送聊天室消息.
+ * 发送普通消息.
  *
  * @author hehui<runphp@dingtalk.com>
  */
@@ -25,7 +25,7 @@ class SendMsg extends Action
 {
     public function __construct(array $arguments)
     {
-        $this->setUri('/nimserver/chatroom/sendMsg.action');
+        $this->setUri('/nimserver/msg/sendMsg.action');
         parent::__construct($arguments);
     }
 
@@ -33,6 +33,6 @@ class SendMsg extends Action
     {
         $return = parent::__invoke($response);
 
-        return $return['desc'];
+        return $return['data'];
     }
 }
