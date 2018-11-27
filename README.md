@@ -26,5 +26,9 @@ $action = new \Shadon\Neteaseim\Command\Nimserver\Chatroom\SendMsg([
 ]);
 
 // execute an action
-$return = $client->executeAction($action);
+try {
+    $return = $client->executeAction($action);
+} catch (\Shadon\Neteaseim\Exception\Exception $e) {
+    // ...
+}
 ```
