@@ -17,7 +17,7 @@ use Psr\Http\Message\ResponseInterface;
 use Shadon\Neteaseim\Exception\Exception;
 use Shadon\Neteaseim\Options\ReturnCode;
 
-class Action
+abstract class Action
 {
     private $arguments;
 
@@ -32,7 +32,7 @@ class Action
     {
         $body = \GuzzleHttp\json_decode($response->getBody(), true);
         if (200 != $body['code']) {
-            throw new Exception(ReturnCode::CODE_INFO[$body['code']], $body['code'], $response->getBody());
+            throw new Exception(ReturnCode::CODE_INFO[$body['code']], $body['code'], $response);
         }
 
         return $body;

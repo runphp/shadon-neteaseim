@@ -13,19 +13,21 @@ declare(strict_types=1);
 
 namespace Shadon\Neteaseim\Exception;
 
+use Psr\Http\Message\ResponseInterface;
+
 class Exception extends \Exception
 {
     /**
-     * @var mixed
+     * @var ResponseInterface
      */
     protected $response;
 
     /**
      * @param string       $message
      * @param int          $code
-     * @param array|string $response The response body
+     * @param ResponseInterface $response
      */
-    public function __construct($message, $code, $response)
+    public function __construct($message, $code, ResponseInterface $response)
     {
         $this->response = $response;
 
@@ -33,11 +35,11 @@ class Exception extends \Exception
     }
 
     /**
-     * Returns the exception's response body.
+     * Returns the exception's response.
      *
-     * @return array|string
+     * @return ResponseInterface
      */
-    public function getResponseBody()
+    public function getResponse()
     {
         return $this->response;
     }
