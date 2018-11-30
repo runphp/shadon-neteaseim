@@ -23,8 +23,8 @@ class Exception extends \Exception
     protected $response;
 
     /**
-     * @param string       $message
-     * @param int          $code
+     * @param string            $message
+     * @param int               $code
      * @param ResponseInterface $response
      */
     public function __construct($message, $code, ResponseInterface $response)
