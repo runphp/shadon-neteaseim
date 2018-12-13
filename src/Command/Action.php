@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Shadon\Neteaseim\Command;
 
+use function GuzzleHttp\Psr7\stream_for;
 use Psr\Http\Message\ResponseInterface;
 use Shadon\Neteaseim\Exception\Exception;
 use Shadon\Neteaseim\Options\ReturnCode;
@@ -32,6 +33,8 @@ abstract class Action
     {
         $body = \GuzzleHttp\json_decode($response->getBody(), true);
         if (200 != $body['code']) {
+            $body['arguments'] = $this->arguments;
+            $response = $response->withBody(stream_for(\GuzzleHttp\json_encode($body)));
             throw new Exception(ReturnCode::CODE_INFO[$body['code']], $body['code'], $response);
         }
 
