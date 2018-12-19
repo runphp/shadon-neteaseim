@@ -13,8 +13,12 @@ declare(strict_types=1);
 
 namespace Shadon\Neteaseim;
 
+use GuzzleHttp\Exception\ConnectException;
+use GuzzleHttp\Exception\ServerException;
 use GuzzleHttp\Psr7\Request;
+use function GuzzleHttp\Psr7\stream_for;
 use Shadon\Neteaseim\Command\Action;
+use Shadon\Neteaseim\Exception\Exception;
 use Shadon\Neteaseim\Tool\CheckSumBuilder;
 
 class Client
@@ -47,10 +51,27 @@ class Client
             'Content-Type' => 'application/x-www-form-urlencoded;charset=utf-8',
         ];
         $request = new Request('POST', $uri, $headers);
-        $response = $this->httpClient->send($request, [
-            'form_params' => $action->getArguments(),
-        ]);
+        // connect times
+        $connectTimes = 3;
+        while ($connectTimes--) {
+            try {
+                $response = $this->httpClient->send($request, [
+                    'form_params' => $action->getArguments(),
+                ]);
 
-        return $action($response);
+                return $action($response);
+            } catch (ServerException $e) {
+                break;
+            } catch (ConnectException $e) {
+                // connect failue retry
+                continue;
+            } catch (\Throwable $e) {
+                throw $e;
+            }
+        }
+        $response = $e->getResponse();
+        $body = ['code' => 500, 'desc' => (string) $response->getBody(), 'arguments' => $action->getArguments()];
+        $response = $response->withBody(stream_for(\GuzzleHttp\json_encode($body)));
+        throw new Exception($e->getMessage(), 500, $response);
     }
 }

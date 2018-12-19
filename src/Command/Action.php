@@ -13,10 +13,10 @@ declare(strict_types=1);
 
 namespace Shadon\Neteaseim\Command;
 
-use function GuzzleHttp\Psr7\stream_for;
 use Psr\Http\Message\ResponseInterface;
 use Shadon\Neteaseim\Exception\Exception;
 use Shadon\Neteaseim\Options\ReturnCode;
+use function GuzzleHttp\Psr7\stream_for;
 
 abstract class Action
 {
