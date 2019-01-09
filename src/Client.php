@@ -16,10 +16,10 @@ namespace Shadon\Neteaseim;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\ServerException;
 use GuzzleHttp\Psr7\Request;
-use function GuzzleHttp\Psr7\stream_for;
 use Shadon\Neteaseim\Command\Action;
 use Shadon\Neteaseim\Exception\Exception;
 use Shadon\Neteaseim\Tool\CheckSumBuilder;
+use function GuzzleHttp\Psr7\stream_for;
 
 class Client
 {
