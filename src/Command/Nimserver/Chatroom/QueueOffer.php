@@ -17,15 +17,15 @@ use Psr\Http\Message\ResponseInterface;
 use Shadon\Neteaseim\Command\Action;
 
 /**
- * 查询用户创建的开启状态聊天室列表.
+ * 往聊天室有序队列中新加或更新元素.
  *
  * @author hehui<runphp@dingtalk.com>
  */
-class QueryUserRoomIds extends Action
+class QueueOffer extends Action
 {
     public function __construct(array $arguments)
     {
-        $this->setUri('/nimserver/chatroom/queryUserRoomIds.action');
+        $this->setUri('/nimserver/chatroom/queueOffer.action');
         parent::__construct($arguments);
     }
 

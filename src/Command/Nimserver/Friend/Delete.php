@@ -11,21 +11,21 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Shadon\Neteaseim\Command\Nimserver\Chatroom;
+namespace Shadon\Neteaseim\Command\Nimserver\Friend;
 
 use Psr\Http\Message\ResponseInterface;
 use Shadon\Neteaseim\Command\Action;
 
 /**
- * 查询用户创建的开启状态聊天室列表.
+ * 删除好友.
  *
  * @author hehui<runphp@dingtalk.com>
  */
-class QueryUserRoomIds extends Action
+class Delete extends Action
 {
     public function __construct(array $arguments)
     {
-        $this->setUri('/nimserver/chatroom/queryUserRoomIds.action');
+        $this->setUri('/nimserver/friend/delete.action');
         parent::__construct($arguments);
     }
 
@@ -33,6 +33,6 @@ class QueryUserRoomIds extends Action
     {
         $return = parent::__invoke($response);
 
-        return $return['desc'];
+        return $return['code'];
     }
 }
