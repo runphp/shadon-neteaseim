@@ -33,6 +33,6 @@ class RemoveManager extends Action
     {
         $return = parent::__invoke($response);
 
-        return $return['200'];
+        return $return['code'];
     }
 }
