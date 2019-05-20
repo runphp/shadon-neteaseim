@@ -11,21 +11,21 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Shadon\Neteaseim\Command\Nimserver\Friend;
+namespace Shadon\Neteaseim\Command\Nimserver\Msg;
 
 use Psr\Http\Message\ResponseInterface;
 use Shadon\Neteaseim\Command\Action;
 
 /**
- * 设置黑名单/静音.
+ * 文件上传.
  *
  * @author hehui<runphp@dingtalk.com>
  */
-class SetSpecialRelation extends Action
+class Upload extends Action
 {
     public function __construct(array $arguments)
     {
-        $this->setUri('/nimserver/friend/setSpecialRelation.action');
+        $this->setUri('/nimserver/msg/upload.action');
         parent::__construct($arguments);
     }
 
@@ -33,6 +33,6 @@ class SetSpecialRelation extends Action
     {
         $return = parent::__invoke($response);
 
-        return $return['code'];
+        return $return;
     }
 }
