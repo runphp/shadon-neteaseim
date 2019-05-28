@@ -18,22 +18,28 @@ use Shadon\Neteaseim\Exception\Exception;
 use Shadon\Neteaseim\Options\ReturnCode;
 use function GuzzleHttp\Psr7\stream_for;
 
-abstract class Action
+abstract class Action implements \JsonSerializable
 {
     private $arguments;
 
     private $uri;
 
+    private $startTime;
+
+    private $endTime;
+
     public function __construct(array $arguments)
     {
         $this->arguments = $arguments;
+        $this->startTime = microtime(true);
     }
 
     public function __invoke(ResponseInterface $response)
     {
+        $this->endTime = microtime(true);
         $body = \GuzzleHttp\json_decode($response->getBody(), true);
         if (200 != $body['code']) {
-            $body['arguments'] = $this->arguments;
+            $body['action'] = $this;
             $response = $response->withBody(stream_for(\GuzzleHttp\json_encode($body)));
             throw new Exception(ReturnCode::CODE_INFO[$body['code']], $body['code'], $response);
         }
@@ -71,5 +77,50 @@ abstract class Action
     public function setUri($uri): void
     {
         $this->uri = $uri;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getStartTime()
+    {
+        return $this->startTime;
+    }
+
+    /**
+     * @param mixed $startTime
+     */
+    public function setStartTime($startTime): void
+    {
+        $this->startTime = $startTime;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getEndTime()
+    {
+        return $this->endTime;
+    }
+
+    /**
+     * @param mixed $endTime
+     */
+    public function setEndTime($endTime): void
+    {
+        $this->endTime = $endTime;
+    }
+
+    /**
+     * @return array
+     */
+    public function jsonSerialize()
+    {
+        return [
+            'arguments' => $this->arguments,
+            'uri'       => $this->uri,
+            'startTime' => $this->startTime,
+            'endTime'   => $this->endTime,
+        ];
     }
 }

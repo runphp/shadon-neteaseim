@@ -17,25 +17,48 @@ use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\ServerException;
 use GuzzleHttp\Psr7\Request;
 use Shadon\Neteaseim\Command\Action;
+use Shadon\Neteaseim\Event\ClientEvent;
 use Shadon\Neteaseim\Exception\Exception;
 use Shadon\Neteaseim\Tool\CheckSumBuilder;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 use function GuzzleHttp\Psr7\stream_for;
 
+/**
+ * Neteaseim Client.
+ */
 class Client
 {
+    /**
+     * @var string
+     */
     private $appKey;
 
+    /**
+     * @var string
+     */
     private $appSecret;
 
+    /**
+     * @var string
+     */
     private $gateway = 'https://api.netease.im';
 
+    /**
+     * @var \GuzzleHttp\Client
+     */
     private $httpClient;
+
+    /**
+     * @var EventDispatcher
+     */
+    private $eventDispatcher;
 
     public function __construct(array $options)
     {
         $this->appKey = $options['appKey'];
         $this->appSecret = $options['appSecret'];
         $this->httpClient = new \GuzzleHttp\Client();
+        $this->eventDispatcher = new EventDispatcher();
     }
 
     public function executeAction(Action $action)
@@ -55,11 +78,15 @@ class Client
         $connectTimes = 3;
         while ($connectTimes--) {
             try {
+                $event = new ClientEvent($action);
+                $this->eventDispatcher->dispatch($event, 'pre.send');
                 $response = $this->httpClient->send($request, [
                     'form_params' => $action->getArguments(),
                 ]);
+                $return = $action($response);
+                $this->eventDispatcher->dispatch($event, 'post.send');
 
-                return $action($response);
+                return $return;
             } catch (ServerException $e) {
                 break;
             } catch (ConnectException $e) {
@@ -70,8 +97,16 @@ class Client
             }
         }
         $response = $e->getResponse();
-        $body = ['code' => 500, 'desc' => (string) $response->getBody(), 'arguments' => $action->getArguments()];
+        $body = ['code' => 500, 'desc' => (string) $response->getBody(), 'action' => $action];
         $response = $response->withBody(stream_for(\GuzzleHttp\json_encode($body)));
         throw new Exception($e->getMessage(), 500, $response);
+    }
+
+    /**
+     * @return EventDispatcher
+     */
+    public function getEventDispatcher(): EventDispatcher
+    {
+        return $this->eventDispatcher;
     }
 }
