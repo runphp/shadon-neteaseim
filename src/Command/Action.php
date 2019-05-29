@@ -47,6 +47,11 @@ abstract class Action implements \JsonSerializable
         return $body;
     }
 
+    public function __wakeup(): void
+    {
+        $this->startTime = microtime(true);
+    }
+
     /**
      * @return mixed
      */
