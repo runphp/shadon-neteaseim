@@ -97,6 +97,9 @@ class Client
             }
         }
         $response = $e->getResponse();
+        if (null === $response) {
+            throw $e;
+        }
         $body = ['code' => 500, 'desc' => (string) $response->getBody(), 'action' => $action];
         $response = $response->withBody(stream_for(\GuzzleHttp\json_encode($body)));
         throw new Exception($e->getMessage(), 500, $response);
