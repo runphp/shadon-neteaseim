@@ -16,12 +16,12 @@ namespace Shadon\Neteaseim;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\ServerException;
 use GuzzleHttp\Psr7\Request;
+use function GuzzleHttp\Psr7\stream_for;
 use Shadon\Neteaseim\Command\Action;
 use Shadon\Neteaseim\Event\ClientEvent;
 use Shadon\Neteaseim\Exception\Exception;
 use Shadon\Neteaseim\Tool\CheckSumBuilder;
 use Symfony\Component\EventDispatcher\EventDispatcher;
-use function GuzzleHttp\Psr7\stream_for;
 
 /**
  * Neteaseim Client.
@@ -81,7 +81,9 @@ class Client
                 $event = new ClientEvent($action);
                 $this->eventDispatcher->dispatch($event, 'pre.send');
                 $response = $this->httpClient->send($request, [
-                    'form_params' => $action->getArguments(),
+                    'form_params'     => $action->getArguments(),
+                    'connect_timeout' => 10,
+                    'timeout'         => 10,
                 ]);
                 $return = $action($response);
                 $this->eventDispatcher->dispatch($event, 'post.send');
